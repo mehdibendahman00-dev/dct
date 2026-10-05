@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Beslisboom leverancierslijst DC Technic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F7F6; --sheet:#FFFFFF; --ink:#18211F; --muted:#56635F; --line:#D3DBD8;
+  --brand:#1F4E53; --brand-soft:#E3EDEC;
+  --self:#2C7A5F; --self-soft:#E2F1EA;
+  --esc:#A66A0B; --esc-soft:#FBF0DC;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#111816; --sheet:#18211F; --ink:#E8EEEC; --muted:#9FB0AB; --line:#2E3B38;
+    --brand:#7FC3C4; --brand-soft:#1E3436;
+    --self:#6FD0A8; --self-soft:#183329;
+    --esc:#F0B657; --esc-soft:#3A2C12;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#111816; --sheet:#18211F; --ink:#E8EEEC; --muted:#9FB0AB; --line:#2E3B38;
+  --brand:#7FC3C4; --brand-soft:#1E3436;
+  --self:#6FD0A8; --self-soft:#183329;
+  --esc:#F0B657; --esc-soft:#3A2C12;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;font-size:17px;line-height:1.55}
+.wrap{max-width:980px;margin:0 auto;padding:28px 20px 48px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:24px;border-bottom:3px solid var(--brand);padding-bottom:16px}
+h1{font-size:1.6rem;line-height:1.2;margin:0;font-weight:700;letter-spacing:-0.01em}
+header p{margin:6px 0 0;color:var(--muted);font-size:0.95rem;max-width:52ch}
+.who{display:flex;flex-direction:column;gap:4px;min-width:240px}
+.who label{font-size:0.85rem;color:var(--muted)}
+.who input{font:inherit;font-size:1rem;padding:10px 12px;border:1.5px solid var(--line);border-radius:6px;background:var(--sheet);color:var(--ink)}
+.grid{display:grid;grid-template-columns:240px minmax(0,1fr);gap:28px;align-items:start}
+.ladder{list-style:none;margin:0;padding:0;border-left:2px solid var(--line)}
+.ladder li{position:relative;padding:7px 0 7px 18px;font-size:0.92rem;color:var(--muted)}
+.ladder li::before{content:"";position:absolute;left:-7px;top:14px;width:12px;height:12px;border-radius:50%;background:var(--paper);border:2px solid var(--line)}
+.ladder li.done{color:var(--ink)}
+.ladder li.done::before{background:var(--line)}
+.ladder li.now{color:var(--brand);font-weight:700}
+.ladder li.now::before{background:var(--brand);border-color:var(--brand)}
+.card{background:var(--sheet);border:1.5px solid var(--line);border-radius:10px;padding:26px 28px}
+.step{font-size:0.9rem;color:var(--muted);margin:0 0 6px}
+.q{font-size:1.55rem;line-height:1.25;font-weight:700;margin:0 0 12px}
+.hint{margin:0;color:var(--muted);max-width:60ch}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+button{font:inherit;font-weight:500;cursor:pointer;border-radius:6px;padding:12px 20px;border:1.5px solid var(--line);background:var(--sheet);color:var(--ink)}
+button:hover{border-color:var(--brand)}
+button:focus-visible,.who input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+button.yes{background:var(--brand);border-color:var(--brand);color:var(--sheet)}
+button.quiet{border-color:transparent;color:var(--muted);padding-left:8px;padding-right:8px}
+kbd{font:inherit;font-size:0.75em;opacity:0.7;margin-left:6px}
+.result{border-width:2px}
+.result.self{border-color:var(--self)}
+.result.esc{border-color:var(--esc)}
+.badge{display:inline-block;font-size:0.85rem;font-weight:700;padding:4px 10px;border-radius:4px}
+.self .badge{background:var(--self-soft);color:var(--self)}
+.esc .badge{background:var(--esc-soft);color:var(--esc)}
+.todo{list-style:none;margin:18px 0 0;padding:0;counter-reset:s}
+.todo li{counter-increment:s;display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+.todo li:first-child{border-top:0}
+.todo input{width:20px;height:20px;margin:3px 0 0;accent-color:var(--brand);flex:none}
+.todo label{cursor:pointer}
+.todo li.ticked label{color:var(--muted);text-decoration:line-through}
+.trail{margin-top:18px;font-size:0.88rem;color:var(--muted)}
+.copied{font-size:0.88rem;color:var(--self);margin-left:4px}
+@media (max-width:720px){
+  .grid{grid-template-columns:1fr}
+  .ladder{display:none}
+  .card{padding:20px}
+  .q{font-size:1.3rem}
+  .btns button{flex:1 1 30%}
+}
+@media (prefers-reduced-motion:no-preference){
+  .card{animation:in .18s ease-out}
+  @keyframes in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Beslisboom leverancierslijst</h1>
+      <p>DC Technic, rekening 440000. Eén leverancier tegelijk. Stop bij de eerste ja.</p>
+    </div>
+    <div class="who">
+      <label for="sup">Leverancier die je nu bekijkt</label>
+      <input id="sup" type="text" placeholder="Bijvoorbeeld: Lecot" autocomplete="off">
+    </div>
+  </header>
+  <div class="grid">
+    <ol class="ladder" id="ladder" aria-label="Voortgang"></ol>
+    <main id="app" aria-live="polite"></main>
+  </div>
+</div>
+<script>
+var Q={
+q1:{n:1,s:"Rode vlag",t:"Staat er een rode vlag in de omschrijving?",h:"Deurwaarder, advocaat, afbetalingsplan, faillissement, curator, \u201cCorrectie op leveranciers\u201d, een persoonsnaam of een datum v\u00f3\u00f3r 2026.",y:"r7",no:"q2"},
+q2:{n:2,s:"Geld ontvangen",t:"Heeft DC Technic geld ontvangen van deze partij?",h:"Je ziet \u201cPayment from\u201d, \u201cterugbetaling\u201d of \u201cremboursement\u201d.",y:"r8",no:"q3"},
+q3:{n:3,s:"Sociaal secretariaat",t:"Is dit een sociaal secretariaat?",h:"SD Worx of Acerta.",y:"r9",no:"q4"},
+q4:{n:4,s:"Saldo \u20ac 0,00",t:"Is het saldo van deze leverancier \u20ac 0,00?",h:"Kijk naar de regel \u201cSaldo \u2026\u201d onder de leverancier. Er staan wel nog regels open.",y:"r1",no:"q5"},
+q5:{n:5,s:"Zelfde bedrag + en \u2013",t:"Staat hetzelfde bedrag \u00e9\u00e9n keer plus en \u00e9\u00e9n keer min?",h:"Bijvoorbeeld Lecot 886,26 en -886,26. Tot op de cent gelijk.",y:"r2",no:"q6"},
+q6:{n:6,s:"Dubbele factuur",t:"Staat dezelfde factuur twee keer ingeboekt?",h:"Enkel ja als factuurnummer, bedrag \u00e9n datum gelijk zijn. E\u00e9n verschil? Kies \u201cIk twijfel\u201d.",y:"r5",no:"q7"},
+q7:{n:7,s:"Andere naam",t:"Bestaat deze firma ook onder een andere naam?",h:"Enkel ja als het btw-nummer of het IBAN gelijk is. Een gelijkende naam is niet genoeg.",y:"r4",no:"q8"},
+q8:{n:8,s:"Betaald zonder factuur",t:"Is het een negatief bedrag zonder factuurnummer?",h:"Er is betaald, maar er hangt geen factuur aan.",y:"q8b",no:"q9"},
+q8b:{n:8,s:"Betaald zonder factuur",t:"Was het een kaartbetaling?",h:"Een webshop- of winkelnaam: bol.com, Mol*\u2026, Gamma, Delhaize. Een overschrijving begint meestal met \u201cTo \u2026\u201d of \u201cInstant overschrijving\u201d.",y:"r3",no:"r6"},
+q9:{n:9,s:"Vervallen",t:"Is de factuur meer dan 90 dagen vervallen?",h:"Kijk naar de kolom \u201cOuderdom\u201d.",y:"r10",no:"r11"}
+};
+var R={
+r1:{k:"self",ty:"Type 1",t:"Alles afpunten",s:["Open de openstaande posten van deze leverancier in Yuki.","Selecteer alle open regels.","Punt ze tegen elkaar af.","Check: de leverancier staat niet meer op de lijst."]},
+r2:{k:"self",ty:"Type 2",t:"Samen afpunten",s:["Selecteer de plus- en de minregel met hetzelfde bedrag.","Punt ze tegen elkaar af.","Doorloop deze leverancier opnieuw vanaf vraag 1."]},
+r3:{k:"self",ty:"Type 3",t:"Factuur opvragen bij de collega",s:["Zoek de betaling in Revolut op datum en bedrag.","Kijk wie de kaarthouder is.","Mail die collega en vraag de factuur in pdf, rechtstreeks naar dctechnic@yukiworks.be. Een foto volstaat niet.","Na een week niets? Stuur een herinnering, met Mehdi in cc.","Weer een week niets? Zet de regel op het escalatieregister.","Factuur binnen in Yuki? Verwerk ze en punt af."]},
+r4:{k:"self",ty:"Type 4",t:"Leveranciers samenvoegen",s:["Vergelijk btw-nummer en IBAN van beide fiches.","Gelijk? Voeg de fiches samen in Yuki. Hou de fiche met de offici\u00eble naam.","Niet gelijk of niet zeker? Vraag het aan Mehdi.","Doorloop de samengevoegde leverancier opnieuw vanaf vraag 1."]},
+r5:{k:"self",ty:"Type 5",t:"Dubbele factuur wegwerken",s:["Kijk of de btw-periode van die factuur al aangegeven is.","Nog niet aangegeven? Verwijder de dubbele factuur.","Al aangegeven? Maak een interne creditnota.","Die creditnota is een exacte omgekeerde kopie: zelfde leverancier, bedragen, grootboekrekening en btw-code.","Zoek in de originele boeking welke btw-code gebruikt werd. Neem exact dezelfde.","Punt factuur en creditnota tegen elkaar af.","Twijfel? Vraag het eerst aan Mehdi."]},
+r6:{k:"self",ty:"Type 6",t:"Factuur zoeken voor een overschrijving",s:["Zoek de betaling in Belfius of Revolut op datum en bedrag.","Noteer de mededeling en wie de betaling deed.","Vraag eerst intern: heeft die collega de factuur?","Niets intern? Maak een conceptmail aan de leverancier en stuur die naar Mehdi. Vraag de factuur in pdf naar dctechnic@yukiworks.be.","Mail nooit zelf naar de leverancier zonder akkoord van Mehdi.","Factuur binnen? Boek ze in en punt af."]},
+r7:{k:"esc",ty:"Type 7/10",t:"Naar het register voor Mehdi",s:["Niets afpunten, niets wijzigen.","Zet de regel op het escalatieregister.","Ga naar de volgende leverancier."]},
+r8:{k:"esc",ty:"Type 8",t:"Naar het register voor Mehdi",s:["Niets wijzigen.","Zet op het register: van wie, datum, bedrag, mededeling.","Mehdi beslist of er een factuur opgemaakt moet worden."]},
+r9:{k:"esc",ty:"Type 9",t:"Naar het register voor Mehdi",s:["Niets afpunten, niets wijzigen.","Zet het saldo op het escalatieregister."]},
+r10:{k:"esc",ty:"Vervallen",t:"Naar het register voor Mehdi",s:["Niets wijzigen.","Zet leverancier, factuurnummer, bedrag en ouderdom op het register."]},
+r11:{k:"self",ty:"Normaal",t:"Laten staan",s:["Dit is een gewone open factuur.","Niets doen. Ga naar de volgende leverancier."]},
+rq:{k:"esc",ty:"Twijfel",t:"Naar het register voor Mehdi",s:["Niets wijzigen.","Zet de regel op het register en noteer waarom je twijfelt."]}
+};
+var order=["q1","q2","q3","q4","q5","q6","q7","q8","q9"];
+var hist=["q1"];
+function el(id){return document.getElementById(id)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]})}
+function go(id){hist.push(id);draw()}
+function back(){if(hist.length>1){hist.pop();draw()}}
+function reset(){hist=["q1"];el("sup").value="";draw();el("sup").focus()}
+function current(){return hist[hist.length-1]}
+function drawLadder(){
+  var cur=current(),curN=Q[cur]?Q[cur].n:(hist.length>1&&Q[hist[hist.length-2]]?Q[hist[hist.length-2]].n:9);
+  el("ladder").innerHTML=order.map(function(k){var q=Q[k],cls=q.n<curN?"done":(q.n===curN?"now":"");return '<li class="'+cls+'">'+q.n+'. '+esc(q.s)+'</li>'}).join("");
+}
+function trailText(){
+  var parts=[];
+  for(var i=0;i<hist.length-1;i++){var q=Q[hist[i]];if(!q)continue;var nx=hist[i+1];parts.push("vraag "+q.n+(nx===q.y?" ja":(nx==="rq"?" twijfel":" nee")))}
+  return parts.length?"Jouw pad: "+parts.join(", "):"";
+}
+function regLine(r){
+  var d=new Date(),dd=("0"+d.getDate()).slice(-2)+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+d.getFullYear();
+  return [dd,el("sup").value.trim(),"","","",r.ty,trailText().replace("Jouw pad: ",""),"Open"].join("\t");
+}
+function draw(){
+  var id=current(),a=el("app");
+  drawLadder();
+  if(Q[id]){
+    var q=Q[id];
+    a.innerHTML='<section class="card"><p class="step">Vraag '+q.n+' van 9</p><h2 class="q">'+esc(q.t)+'</h2><p class="hint">'+esc(q.h)+'</p>'+
+    '<div class="btns"><button class="yes" data-go="'+q.y+'">Ja<kbd>J</kbd></button><button data-go="'+q.no+'">Nee<kbd>N</kbd></button><button data-go="rq">Ik twijfel<kbd>T</kbd></button>'+
+    (hist.length>1?'<button class="quiet" data-act="back">Terug</button>':'')+'</div>'+
+    (hist.length>1?'<p class="trail">'+esc(trailText())+'</p>':'')+'</section>';
+  }else{
+    var r=R[id];
+    a.innerHTML='<section class="card result '+r.k+'"><span class="badge">'+esc(r.ty)+(r.k==="self"?" \u00b7 zelf doen":" \u00b7 stoppen en doorgeven")+'</span>'+
+    '<h2 class="q" style="margin-top:14px">'+esc(r.t)+'</h2><ol class="todo">'+
+    r.s.map(function(x,i){return '<li><input type="checkbox" id="c'+i+'"><label for="c'+i+'">'+esc(x)+'</label></li>'}).join("")+'</ol>'+
+    '<div class="btns"><button class="yes" data-act="reset">Volgende leverancier</button>'+
+    (r.k==="esc"?'<button data-act="copy">Kopieer regel voor het register</button>':'')+
+    '<button class="quiet" data-act="back">Terug</button><span class="copied" id="copied" aria-live="polite"></span></div>'+
+    '<p class="trail">'+esc(trailText())+'</p></section>';
+  }
+}
+document.addEventListener("click",function(e){
+  var b=e.target.closest("button");if(!b)return;
+  if(b.dataset.go){go(b.dataset.go)}
+  else if(b.dataset.act==="back"){back()}
+  else if(b.dataset.act==="reset"){reset()}
+  else if(b.dataset.act==="copy"){
+    var txt=regLine(R[current()]),msg=el("copied");
+    try{navigator.clipboard.writeText(txt).then(function(){msg.textContent="Gekopieerd. Plak in de eerste lege rij."},function(){msg.textContent="Kopi\u00ebren lukte niet. Vul de rij met de hand in."})}catch(err){msg.textContent="Kopi\u00ebren lukte niet. Vul de rij met de hand in."}
+  }
+});
+document.addEventListener("change",function(e){
+  if(e.target.matches(".todo input")){e.target.closest("li").classList.toggle("ticked",e.target.checked)}
+});
+document.addEventListener("keydown",function(e){
+  if(e.target.tagName==="INPUT")return;
+  var q=Q[current()];if(!q)return;
+  var k=e.key.toLowerCase();
+  if(k==="j")go(q.y);else if(k==="n")go(q.no);else if(k==="t")go("rq");
+});
+draw();
+</script>
+</body>
+</html>
